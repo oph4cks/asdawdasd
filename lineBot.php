@@ -38,6 +38,17 @@ class Linebot {
 		curl_close($ch); 
 		return $result;
 	}
+  
+  public function __construct(HTTPClient $httpClient, array $args)
+    {
+        $this->httpClient = $httpClient;
+        $this->channelSecret = $args['channelSecret'];
+
+        $this->endpointBase = LINEBot::DEFAULT_ENDPOINT_BASE;
+        if (array_key_exists('endpointBase', $args) && !empty($args['endpointBase'])) {
+            $this->endpointBase = $args['endpointBase'];
+        }
+    }
 	
 	public function reply($text){
 		$api = $this->apiReply;
@@ -129,6 +140,11 @@ class Linebot {
 		);
 		$this->push($body);
 	}
+  
+  public function leaveGroup($groupId)
+    {
+        return $this->httpClient->post($this->endpointBase . '/v2/bot/group/' . urlencode($groupId) . '/leave', []);
+    }
 	
 	public function getMessageText(){
 		$webhook = $this->webhookEventObject;
